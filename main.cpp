@@ -10,6 +10,8 @@
 #include <numeric>
 #include <QTextCodec>
 #include <QSerialPort>
+#include <QSerialPortInfo>
+#include "integration.cpp"
 
 std::vector<std::map<size_t, qreal>> port_read(QByteArray d_time)
 {
@@ -19,7 +21,7 @@ std::vector<std::map<size_t, qreal>> port_read(QByteArray d_time)
     size_t start_time;
     bool start = true;
     QStringList line;
-    serial.setPortName("/dev/cu.usbmodem14121");
+    serial.setPortName("usbmon2");
     serial.setBaudRate(QSerialPort::Baud57600);
     serial.setDataBits(QSerialPort::Data8);
     serial.setParity(QSerialPort::NoParity);
@@ -59,9 +61,11 @@ std::vector<std::map<size_t, qreal>> port_read(QByteArray d_time)
 
 int main()
 {
-    std::vector<std::map<size_t, qreal>> a;
-    a = port_read("27/06/2018 17:42:33");
-    for (auto const& x: a[0])
-        std::cout << x.first << ":" << x.second << std::endl;
+//    std::vector<std::map<size_t, qreal>> a;
+//    a = port_read("27/06/2018 17:42:33");
+//    for (auto const& x: a[0])
+//        std::cout << x.first << ":" << x.second << std::endl;
+    std::map<size_t, qreal> a{{0, 0}, {1, 1}, {2, 2}};
+    std::cout << integrate(a) << std::endl;
     return 0;
 }
