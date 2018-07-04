@@ -3,6 +3,19 @@ QT = core gui charts serialport
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 CONFIG += c++11
 
-SOURCES += main.cpp integration.cpp
+SOURCES += main.cpp \
+    settingsdialog.cpp \
+    mainwindow.cpp
 
-RESOURCES += new_qrc.qrc
+RESOURCES += \
+    new_qrc.qrc
+
+HEADERS += \
+    settingsdialog.h \
+    mainwindow.h
+
+DISTFILES +=
+
+FORMS += \
+    settingsdialog.ui \
+    mainwindow.ui

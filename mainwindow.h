@@ -1,0 +1,37 @@
+
+#include <QWidget>
+#include <QSerialPort>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QObject>
+#include <QApplication>
+#include <QTextCodec>
+#include <QMainWindow>
+#ifndef MAINWIDGET_H
+#define MAINWIDGET_H
+
+QT_BEGIN_NAMESPACE
+namespace Ui {
+class MainWindow;
+}
+
+QT_END_NAMESPACE
+
+class SettingsDialog;
+
+class MainWindow : public QMainWindow {
+    Q_OBJECT
+public:
+    explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
+private slots:
+    void openSerialPort();
+    void writeData(const QByteArray &data);
+private:
+    Ui::MainWindow *ui = nullptr;
+    SettingsDialog *settings = nullptr;
+    QSerialPort *serial = nullptr;
+    QPushButton *configure = nullptr;
+    QPushButton *start = nullptr;
+};
+#endif // MAINWIDGET_H
