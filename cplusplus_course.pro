@@ -5,14 +5,16 @@ CONFIG += c++11
 
 SOURCES += main.cpp \
     settingsdialog.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    chartwindow.cpp
 
 RESOURCES += \
     new_qrc.qrc
 
 HEADERS += \
     settingsdialog.h \
-    mainwindow.h
+    mainwindow.h \
+    chartwindow.h
 
 DISTFILES +=
 

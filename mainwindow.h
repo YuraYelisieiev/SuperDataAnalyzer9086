@@ -1,4 +1,3 @@
-
 #include <QWidget>
 #include <QSerialPort>
 #include <QHBoxLayout>
@@ -7,6 +6,8 @@
 #include <QApplication>
 #include <QTextCodec>
 #include <QMainWindow>
+
+#include "chartwindow.h"
 #ifndef MAINWIDGET_H
 #define MAINWIDGET_H
 
@@ -33,5 +34,6 @@ private:
     QSerialPort *serial = nullptr;
     QPushButton *configure = nullptr;
     QPushButton *start = nullptr;
+    ChartWindow *chart = nullptr;
 };
 #endif // MAINWIDGET_H
