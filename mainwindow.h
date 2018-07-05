@@ -6,6 +6,8 @@
 #include <QApplication>
 #include <QTextCodec>
 #include <QMainWindow>
+#include <QTimer>
+#include <QDebug>
 
 #include "chartwindow.h"
 #ifndef MAINWIDGET_H
@@ -35,5 +37,6 @@ private:
     QPushButton *configure = nullptr;
     QPushButton *start = nullptr;
     ChartWindow *chart = nullptr;
+    QTimer *timer = nullptr;
 };
 #endif // MAINWIDGET_H

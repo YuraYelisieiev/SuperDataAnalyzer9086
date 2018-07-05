@@ -8,7 +8,7 @@ ChartWindow::ChartWindow()
     axisY = new QtCharts::QValueAxis;
 }
 
-ChartWindow::ChartWindow(const std::map<int, qreal> &points) : ChartWindow() {
+ChartWindow::ChartWindow(const std::map<size_t, qreal> &points) : ChartWindow() {
     addData(points);
 }
 
@@ -16,7 +16,7 @@ void ChartWindow::setTitle(const QString& title) {
     chart()->setTitle(title);
 }
 
-QtCharts::QLineSeries* ChartWindow::addData(const std::map<int, qreal> &points) {
+QtCharts::QLineSeries* ChartWindow::addData(const std::map<size_t, qreal> &points) {
     auto series = new QtCharts::QLineSeries;
     chart()->addSeries(series);
     chart()->setAxisX(axisX, series);
@@ -25,15 +25,15 @@ QtCharts::QLineSeries* ChartWindow::addData(const std::map<int, qreal> &points) 
     return series;
 }
 
-void ChartWindow::updateData(const std::map<int, qreal> &points, QtCharts::QLineSeries *series) {
-    qreal maxX = INT_MIN;
+void ChartWindow::updateData(const std::map<size_t, qreal> &points, QtCharts::QLineSeries *series) {
+    qreal maxX = 0;
     qreal minX = INT_MAX;
-    qreal maxY = INT_MIN;
+    qreal maxY = 0;
     qreal minY = INT_MAX;
     series->clear();
     for(auto st = points.begin(); st != points.end(); ++st) {
-        const int& x = st->first;
-        const int& y = st->second;
+        const size_t& x = st->first;
+        const size_t& y = st->second;
         series->append(x, y);
         if(x > maxX) maxX = x;
         if(x < minX) minX = x;

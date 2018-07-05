@@ -14,10 +14,10 @@ class ChartWindow : public QtCharts::QChartView
     Q_OBJECT
 public:
     ChartWindow();
-    ChartWindow(const std::map<int, qreal>& points);
+    ChartWindow(const std::map<size_t, qreal>& points);
     void setTitle(const QString&);
-    QtCharts::QLineSeries* addData(const std::map<int, qreal>& points);
-    void updateData(const std::map<int, qreal>& points, QtCharts::QLineSeries *series);
+    QtCharts::QLineSeries* addData(const std::map<size_t, qreal>& points);
+    void updateData(const std::map<size_t, qreal>& points, QtCharts::QLineSeries *series);
 private:
     QtCharts::QValueAxis *axisX;
     QtCharts::QValueAxis *axisY;

@@ -49,7 +49,7 @@ void MainWindow::openSerialPort(){
     serial->waitForBytesWritten(1000);
     serial->waitForReadyRead(1000);
     serial->setBreakEnabled(false);
-    std::map<int, qreal> map_x, map_y, map_z;
+    std::map<size_t, qreal> map_x, map_y, map_z;
     qreal x_1 = 0.0, y_1 = 0.0, z_1 = 0.0;
     size_t start_time;
     bool start = true;
@@ -58,9 +58,10 @@ void MainWindow::openSerialPort(){
     auto seriesX = chart->addData(map_x);
     auto seriesY = chart->addData(map_y);
     auto seriesZ = chart->addData(map_z);
+    int n = 0;
     while (serial->isOpen())
     {
-        size_t y;
+        size_t y = 0, time = 0;
         QByteArray data = serial->readLine();
         QString DataAsString = QTextCodec::codecForMib(106)->toUnicode(data);
         line = DataAsString.split(' ', QString::SkipEmptyParts);
@@ -68,23 +69,27 @@ void MainWindow::openSerialPort(){
         if (start)
         {
             start_time = line[2].toULongLong();
-            y = 0;
             start = false;
         }
         else
+        {
             y = line[2].toULongLong();
+            time = y - start_time;
+        }
         x_1 += line[3].toDouble();
         y_1 += line[4].toDouble();
         z_1 += line[5].toDouble();
-        size_t time = y - start_time;
+        qDebug() << x_1 << " " << y_1 << " " << z_1;
         map_x[time] = x_1;
         map_y[time] = y_1;
         map_z[time] = z_1;
         chart->updateData(map_x, seriesX);
         chart->updateData(map_y, seriesY);
         chart->updateData(map_z, seriesZ);
+        chart->repaint();
+        this->repaint();
     }
     //here we need to add another method instead of the map
-    std::vector<std::map<int, qreal>> params_vector {map_x, map_y, map_z};
+    std::vector<std::map<size_t, qreal>> params_vector {map_x, map_y, map_z};
 //    return params_vector;
 }
