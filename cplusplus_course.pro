@@ -6,7 +6,8 @@ CONFIG += c++11
 SOURCES += main.cpp \
     settingsdialog.cpp \
     mainwindow.cpp \
-    chartwindow.cpp
+    chartwindow.cpp \
+    fouriertransformation.cpp
 
 RESOURCES += \
     new_qrc.qrc
