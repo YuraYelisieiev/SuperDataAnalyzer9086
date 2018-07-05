@@ -18,6 +18,7 @@ public:
     void setTitle(const QString&);
     QtCharts::QLineSeries* addData(const std::map<size_t, qreal>& points);
     void updateData(const std::map<size_t, qreal>& points, QtCharts::QLineSeries *series);
+    void updateData(size_t x, qreal y, QtCharts::QLineSeries *series);
 private:
     QtCharts::QValueAxis *axisX;
     QtCharts::QValueAxis *axisY;

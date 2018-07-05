@@ -101,6 +101,9 @@ void MainWindow::openSerialPort(){
         map_x[time] = x_1;
         map_y[time] = y_1;
         map_z[time] = z_1;
+        chart->updateData(time, x_1, seriesX);
+        chart->updateData(time, y_1, seriesY);
+        chart->updateData(time, z_1, seriesZ);
     }
     //here we need to add another method instead of the map
     std::vector<std::map<size_t, qreal>> params_vector {map_x, map_y, map_z};

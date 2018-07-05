@@ -45,3 +45,19 @@ void ChartWindow::updateData(const std::map<size_t, qreal> &points, QtCharts::QL
     axisX->setRange(minX, maxX);
     axisY->setRange(minY, maxY);
 }
+
+void ChartWindow::updateData(size_t x, qreal y, QtCharts::QLineSeries *series) {
+    qreal maxX = static_cast<QtCharts::QValueAxis>(chart()->axisX()).max();
+    qreal minX = static_cast<QtCharts::QValueAxis>(chart()->axisX()).min();
+    qreal maxY = static_cast<QtCharts::QValueAxis>(chart()->axisY()).max();
+    qreal minY = static_cast<QtCharts::QValueAxis>(chart()->axisY()).min();
+    if(x > maxX) maxX = x;
+    if(x < minX) minX = x;
+    if(y > maxY) maxY = y;
+    if(y < minY) minY = y;
+    series->append(x, y);
+    axisX->setTickCount(static_cast<QtCharts::QValueAxis>(chart()->axisY()).tickCount() + 1);
+    axisY->setTickCount(static_cast<QtCharts::QValueAxis>(chart()->axisY()).tickCount() + 1);
+    axisX->setRange(minX, maxX);
+    axisY->setRange(minY, maxY);
+}
