@@ -1,3 +1,4 @@
+#include <QMessageBox>
 #include "mainwindow.h"
 #include "settingsdialog.h"
 #include "ui_mainwindow.h"
@@ -15,9 +16,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionRun, &QAction::triggered, this, &MainWindow::openSerialPort);
     connect(ui->actionSettings, &QAction::triggered, settings, &SettingsDialog::show);
 
-//    std::map<int, qreal> points{{0,0.0}, {1, 11.0}, {2, 7.0}, {3, 15.0}, {4, 10.0}, {5, 8.0}, {6, 7.0}, {7, 10.0}};
+//    std::map<size_t, qreal> points{{0,0.0}, {1, 11.0}, {2, 7.0}, {3, 15.0}, {4, 10.0}, {5, 8.0}, {6, 7.0}, {7, 10.0}};
+//    std::map<size_t, qreal> p1oints{{0,1}, {5, 9}, {6, 8}, {7, 11}};
     chart = new ChartWindow();
 //    chart->addData(points);
+//    chart->addData(p1oints);
     setCentralWidget(chart);
 }
 
@@ -30,7 +33,13 @@ void MainWindow::writeData(const QByteArray &data){
     serial->write(data);
 }
 
-
+void MainWindow::update() {
+    chart->updateData(map_x, seriesX);
+    chart->updateData(map_y, seriesY);
+    chart->updateData(map_z, seriesZ);
+    chart->repaint();
+    this->repaint();
+}
 void MainWindow::openSerialPort(){
 //    std::map<int, int> p1oints{{0,1}, {5, 9}, {6, 8}, {7, 11}};
 //    std::cout << chart->chart()->series().size() << std::endl;
@@ -44,20 +53,29 @@ void MainWindow::openSerialPort(){
     serial->setStopBits(p.stopBits);
     serial->setFlowControl(p.flowControl);
     serial->open(QIODevice::ReadWrite);
+    if(!serial->isOpen()) {
+        QMessageBox msg;
+        msg.setText("Cannot open Device for COM-port");
+        msg.exec();
+        return;
+    }
     writeData("30/06/2018 15:01:33");
     serial->flush();
     serial->waitForBytesWritten(1000);
     serial->waitForReadyRead(1000);
     serial->setBreakEnabled(false);
-    std::map<size_t, qreal> map_x, map_y, map_z;
+//    std::map<size_t, qreal> map_x, map_y, map_z;
     qreal x_1 = 0.0, y_1 = 0.0, z_1 = 0.0;
     size_t start_time;
     bool start = true;
     QStringList line;
 
-    auto seriesX = chart->addData(map_x);
-    auto seriesY = chart->addData(map_y);
-    auto seriesZ = chart->addData(map_z);
+    seriesX = chart->addData(map_x);
+    seriesY = chart->addData(map_y);
+    seriesZ = chart->addData(map_z);
+    timer = new QTimer();
+    connect(timer, SIGNAL(timeout()), this, SLOT(update()));
+    timer->start(1000);
     int n = 0;
     while (serial->isOpen())
     {
@@ -83,11 +101,6 @@ void MainWindow::openSerialPort(){
         map_x[time] = x_1;
         map_y[time] = y_1;
         map_z[time] = z_1;
-        chart->updateData(map_x, seriesX);
-        chart->updateData(map_y, seriesY);
-        chart->updateData(map_z, seriesZ);
-        chart->repaint();
-        this->repaint();
     }
     //here we need to add another method instead of the map
     std::vector<std::map<size_t, qreal>> params_vector {map_x, map_y, map_z};

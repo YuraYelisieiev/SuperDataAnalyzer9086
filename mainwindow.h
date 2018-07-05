@@ -30,6 +30,7 @@ public:
 private slots:
     void openSerialPort();
     void writeData(const QByteArray &data);
+    void update();
 private:
     Ui::MainWindow *ui = nullptr;
     SettingsDialog *settings = nullptr;
@@ -38,5 +39,7 @@ private:
     QPushButton *start = nullptr;
     ChartWindow *chart = nullptr;
     QTimer *timer = nullptr;
+    std::map<size_t, qreal> map_x, map_y, map_z;
+    QtCharts::QLineSeries *seriesX, *seriesY, *seriesZ;
 };
 #endif // MAINWIDGET_H
