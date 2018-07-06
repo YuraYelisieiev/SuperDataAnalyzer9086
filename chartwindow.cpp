@@ -57,8 +57,10 @@ void ChartWindow::updateData(size_t x, qreal y, QtCharts::QLineSeries *series) {
     if(y < minY) minY = y;
     series->append(x, y);
     this->repaint();
-    axisX->setTickCount(static_cast<QtCharts::QValueAxis>(chart()->axisY()).tickCount() + 1);
-    axisY->setTickCount(static_cast<QtCharts::QValueAxis>(chart()->axisY()).tickCount() + 1);
+    axisX->setTickCount(15);
+    axisY->setTickCount(15);
+//    axisX->setTickCount(static_cast<QtCharts::QValueAxis>(chart()->axisY()).tickCount() + 1);
+//    axisY->setTickCount(static_cast<QtCharts::QValueAxis>(chart()->axisY()).tickCount() + 1);
     axisX->setRange(minX, maxX);
     axisY->setRange(minY, maxY);
 }

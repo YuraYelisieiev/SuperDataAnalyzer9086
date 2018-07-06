@@ -96,6 +96,10 @@ void MainWindow::update() {
     this->repaint();
 }
 void MainWindow::openSerialPort(){
+    delete chart;
+    chart = new ChartWindow();
+    setCentralWidget(chart);
+    this->repaint();
 //    std::map<int, int> p1oints{{0,1}, {5, 9}, {6, 8}, {7, 11}};
 //    std::cout << chart->chart()->series().size() << std::endl;
 //    QtCharts::QLineSeries* series =   static_cast<QtCharts::QLineSeries*>(chart->chart()->series()[0]);
@@ -131,25 +135,36 @@ void MainWindow::openSerialPort(){
     seriesY = chart->addData(map_y);
     seriesZ = chart->addData(map_z);
     timer = new QTimer();
-    connect(timer, SIGNAL(timeout()), this, SLOT(update()));
-    timer->start(1000);
+//    connect(timer, SIGNAL(timeout()), this, SLOT(update()));
+//    timer->start(3000);
     while (serial->isOpen())
     {
         size_t y = 0, time = 0;
         QByteArray data = serial->readLine();
         QString DataAsString = QTextCodec::codecForMib(106)->toUnicode(data);
         line = DataAsString.split(' ', QString::SkipEmptyParts);
-        if (line.length() != 12) break;
+        qDebug() << line;
+        qDebug() << line.length();
+        size_t len = line.length();
+
+        if(len == 0) {break;}
+        else if (len != 12) {continue;}
+
+
         if (start)
+
         {
             start_time = line[2].toULongLong();
             start = false;
         }
+
         else
+
         {
             y = line[2].toULongLong();
             time = y - start_time;
         }
+
         x_1 += line[3].toDouble();
         y_1 += line[4].toDouble();
         z_1 += line[5].toDouble();
@@ -160,6 +175,16 @@ void MainWindow::openSerialPort(){
 //        chart->updateData(time, x_1, seriesX);
 //        chart->updateData(time, y_1, seriesY);
 //        chart->updateData(time, z_1, seriesZ);
+        this->update();
         this->repaint();
     }
+
+    qDebug() << "end while";
+//    std::map<size_t, qreal> *x, *y, *z;
+//    x = &map_x, y = &map_y, z = &map_z;
+//    delete x, delete y, delete z;
+    timer->stop();
+//    map_x.clear(), map_y.clear(), map_z.clear();
+    qDebug() << "end memory free";
+    serial->close();
 }

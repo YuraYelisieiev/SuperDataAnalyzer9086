@@ -24,6 +24,9 @@ qreal integrate(const std::map<size_t, qreal>& points) {
     size_t cur_num = 0;
     auto tmp = points.begin();
     for(auto st = points.begin(); cur_num*points_number < points.size(); std::advance(tmp, points_number), ++cur_num) {
+        if(cur_num >= threads_num) {
+            break;
+        }
         threads.emplace_back(simple_integrate, st, tmp, std::ref(results[cur_num]));
         st = tmp;
     }
