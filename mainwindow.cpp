@@ -52,15 +52,20 @@ void MainWindow::changeChart(int index) {
     if(index == 0) {
         chart->setTitle(tr("Function of data received from COM-port"));
         setCentralWidget(chart);
-        QtCharts::QLineSeries *tmp_seriesX, *tmp_seriesY, *tmp_seriesZ;
-        tmp_seriesX = seriesX;
-        seriesX = fseriesX;
-        fseriesX = tmp_seriesX;
-
     } else if(index == 1) {
         chart->setTitle(tr("Fourier Transformation of function"));
         setCentralWidget(fourier);
     }
+    QtCharts::QLineSeries *tmp_seriesX, *tmp_seriesY, *tmp_seriesZ;
+    tmp_seriesX = seriesX;
+    seriesX = fseriesX;
+    fseriesX = tmp_seriesX;
+    tmp_seriesY = seriesY;
+    seriesY = fseriesY;
+    fseriesY = tmp_seriesY;
+    tmp_seriesZ = seriesZ;
+    seriesZ = fseriesZ;
+    fseriesZ = tmp_seriesZ;
 //    chart->repaint();
     this->repaint();
 }
