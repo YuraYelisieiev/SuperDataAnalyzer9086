@@ -14,7 +14,6 @@
 #include <QPushButton>
 
 #include "mainwindow.h"
-#include "fouriertransformation.cpp"
 
 int main(int argc, char *argv[])
 {

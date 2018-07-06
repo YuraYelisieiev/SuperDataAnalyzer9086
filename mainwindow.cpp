@@ -4,28 +4,63 @@
 #include "ui_mainwindow.h"
 
 #include <map>
+#include "fouriertransformation.cpp"
 #include <iostream>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     settings(new SettingsDialog),
-    serial(new QSerialPort)
+    serial(new QSerialPort),
+    chart(new ChartWindow)
 {
     ui->setupUi(this);
+    chartOptions = new QComboBox();
+    chartOptions->addItem("Chart of Data");
+    chartOptions->addItem("Chart of Fourier Transformated Data");
+    connect(chartOptions, SIGNAL(currentIndexChanged(int)), this, SLOT(changeChart(int)));
+    ui->toolBar->addWidget(chartOptions);
     connect(ui->actionRun, &QAction::triggered, this, &MainWindow::openSerialPort);
     connect(ui->actionSettings, &QAction::triggered, settings, &SettingsDialog::show);
-
-//    std::map<size_t, qreal> points{{0,0.0}, {1, 11.0}, {2, 7.0}, {3, 15.0}, {4, 10.0}, {5, 8.0}, {6, 7.0}, {7, 10.0}};
-//    std::map<size_t, qreal> p1oints{{0,1}, {5, 9}, {6, 8}, {7, 11}};
-    chart = new ChartWindow();
-//    chart->addData(points);
-//    chart->addData(p1oints);
     setCentralWidget(chart);
+
+    map_x = std::map<size_t, qreal>({{0,0.0}, {1, 11.0}, {2, 7.0}, {3, 15.0}, {4, 10.0}, {5, 8.0}, {6, 7.0}, {7, 10.0}});
+    map_y = std::map<size_t, qreal>({{0,1}, {5, 9}, {6, 8}, {7, 11}});
+    chart->addData(map_x);
+    chart->addData(map_y);
+    chart->addData(map_z);
+    this->repaint();
+}
+
+void MainWindow::changeChart(int index) {
+//    std::cout << index << std::endl;
+    delete chart;
+    chart = new ChartWindow();
+    if(index == 0) {
+        chart->addData(map_x);
+        chart->addData(map_y);
+        chart->addData(map_z);
+    } else if(index == 1) {
+        auto tmp_map_x = ft(map_x);
+        auto tmp_map_y = ft(map_y);
+        auto tmp_map_z = ft(map_z);
+        chart->addData(tmp_map_x);
+        chart->addData(tmp_map_y);
+        chart->addData(tmp_map_z);
+    }
+    setCentralWidget(chart);
+//    chart->repaint();
+    this->repaint();
 }
 
 MainWindow::~MainWindow(){
+    delete chart;
     delete settings;
+    delete serial;
+    delete configure;
+    delete start;
+    delete chartOptions;
+    delete timer;
     delete ui;
 }
 
@@ -46,6 +81,8 @@ void MainWindow::openSerialPort(){
 //    QtCharts::QLineSeries* series =   static_cast<QtCharts::QLineSeries*>(chart->chart()->series()[0]);
 //    chart->updateData(p1oints, series);
     const SettingsDialog::Settings p = settings->settings();
+//    chart = new ChartWindow();
+//    setCentralWidget(chart);
     serial->setPortName(p.name);
     serial->setBaudRate(p.baudRate);
     serial->setDataBits(p.dataBits);
@@ -59,7 +96,7 @@ void MainWindow::openSerialPort(){
         msg.exec();
         return;
     }
-    writeData("30/06/2018 15:01:33");
+    writeData("06/07/2018 01:52:33");
     serial->flush();
     serial->waitForBytesWritten(1000);
     serial->waitForReadyRead(1000);
@@ -76,14 +113,13 @@ void MainWindow::openSerialPort(){
     timer = new QTimer();
     connect(timer, SIGNAL(timeout()), this, SLOT(update()));
     timer->start(1000);
-    int n = 0;
     while (serial->isOpen())
     {
         size_t y = 0, time = 0;
         QByteArray data = serial->readLine();
         QString DataAsString = QTextCodec::codecForMib(106)->toUnicode(data);
         line = DataAsString.split(' ', QString::SkipEmptyParts);
-        if (line.length() != 12) continue;
+        if (line.length() != 12) break;
         if (start)
         {
             start_time = line[2].toULongLong();
@@ -104,8 +140,6 @@ void MainWindow::openSerialPort(){
         chart->updateData(time, x_1, seriesX);
         chart->updateData(time, y_1, seriesY);
         chart->updateData(time, z_1, seriesZ);
+        this->repaint();
     }
-    //here we need to add another method instead of the map
-    std::vector<std::map<size_t, qreal>> params_vector {map_x, map_y, map_z};
-//    return params_vector;
 }
