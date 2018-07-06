@@ -7,7 +7,8 @@ SOURCES += main.cpp \
     settingsdialog.cpp \
     mainwindow.cpp \
     chartwindow.cpp \
-    fouriertransformation.cpp
+    fouriertransformation.cpp \
+    integration.cpp
 
 RESOURCES += \
     new_qrc.qrc

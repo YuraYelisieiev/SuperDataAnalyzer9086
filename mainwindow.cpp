@@ -5,6 +5,7 @@
 
 #include <map>
 #include "fouriertransformation.cpp"
+#include "integration.cpp"
 #include <iostream>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -14,22 +15,30 @@ MainWindow::MainWindow(QWidget *parent) :
     serial(new QSerialPort),
     chart(new ChartWindow)
 {
+    chart->setTitle(tr("Function of data received from COM-port"));
     ui->setupUi(this);
     chartOptions = new QComboBox();
-    chartOptions->addItem("Chart of Data");
-    chartOptions->addItem("Chart of Fourier Transformated Data");
+    integralSum = new QLabel("");
+    chartOptions->addItem("Function of data");
+    chartOptions->addItem("Fourier Transformation of function");
     connect(chartOptions, SIGNAL(currentIndexChanged(int)), this, SLOT(changeChart(int)));
     ui->toolBar->addWidget(chartOptions);
+    ui->toolBar->addWidget(integralSum);
     connect(ui->actionRun, &QAction::triggered, this, &MainWindow::openSerialPort);
     connect(ui->actionSettings, &QAction::triggered, settings, &SettingsDialog::show);
     setCentralWidget(chart);
 
-    map_x = std::map<size_t, qreal>({{0,0.0}, {1, 11.0}, {2, 7.0}, {3, 15.0}, {4, 10.0}, {5, 8.0}, {6, 7.0}, {7, 10.0}});
-    map_y = std::map<size_t, qreal>({{0,1}, {5, 9}, {6, 8}, {7, 11}});
-    chart->addData(map_x);
-    chart->addData(map_y);
-    chart->addData(map_z);
-    this->repaint();
+// If u r Roman and don't have STM uncomment below
+//    map_x = std::map<size_t, qreal>({{0,0.0}, {1, 11.0}, {2, 7.0}, {3, 15.0}, {4, 10.0}, {5, 8.0}, {6, 7.0}, {7, 10.0}});
+//    map_y = std::map<size_t, qreal>({{0,1}, {5, 9}, {6, 8}, {7, 11}});
+//    seriesX = chart->addData(map_x);
+//    seriesY = chart->addData(map_y);
+//    seriesZ = chart->addData(map_z);
+//    this->repaint();
+
+//    timer = new QTimer();
+//    connect(timer, SIGNAL(timeout()), this, SLOT(update()));
+//    timer->start(1000);
 }
 
 void MainWindow::changeChart(int index) {
@@ -37,16 +46,24 @@ void MainWindow::changeChart(int index) {
     delete chart;
     chart = new ChartWindow();
     if(index == 0) {
-        chart->addData(map_x);
-        chart->addData(map_y);
-        chart->addData(map_z);
+        chart->setTitle(tr("Function of data received from COM-port"));
+        map_x = tmp_map_x;
+        map_y = tmp_map_y;
+        map_z = tmp_map_z;
+        seriesX = chart->addData(map_x);
+        seriesY = chart->addData(map_y);
+        seriesZ = chart->addData(map_z);
     } else if(index == 1) {
-        auto tmp_map_x = ft(map_x);
-        auto tmp_map_y = ft(map_y);
-        auto tmp_map_z = ft(map_z);
-        chart->addData(tmp_map_x);
-        chart->addData(tmp_map_y);
-        chart->addData(tmp_map_z);
+        chart->setTitle(tr("Fourier Transformation of function"));
+        tmp_map_x = map_x;
+        tmp_map_y = map_y;
+        tmp_map_z = map_z;
+        map_x = ft(map_x);
+        map_y = ft(map_y);
+        map_z = ft(map_z);
+        seriesX = chart->addData(map_x);
+        seriesY = chart->addData(map_y);
+        seriesZ = chart->addData(map_z);
     }
     setCentralWidget(chart);
 //    chart->repaint();
@@ -69,6 +86,9 @@ void MainWindow::writeData(const QByteArray &data){
 }
 
 void MainWindow::update() {
+    integralSum->setText(" Integral x: " + QString::number(integrate(map_x)) +
+                         " Integral y: " + QString::number(integrate(map_y)) +
+                         " Integral z: " + QString::number(integrate(map_z)));
     chart->updateData(map_x, seriesX);
     chart->updateData(map_y, seriesY);
     chart->updateData(map_z, seriesZ);
@@ -137,9 +157,9 @@ void MainWindow::openSerialPort(){
         map_x[time] = x_1;
         map_y[time] = y_1;
         map_z[time] = z_1;
-        chart->updateData(time, x_1, seriesX);
-        chart->updateData(time, y_1, seriesY);
-        chart->updateData(time, z_1, seriesZ);
+//        chart->updateData(time, x_1, seriesX);
+//        chart->updateData(time, y_1, seriesY);
+//        chart->updateData(time, z_1, seriesZ);
         this->repaint();
     }
 }
