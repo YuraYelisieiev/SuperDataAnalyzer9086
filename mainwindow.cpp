@@ -43,29 +43,24 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::changeChart(int index) {
 //    std::cout << index << std::endl;
-    delete chart;
-    chart = new ChartWindow();
+    if(!fourier) {
+        fourier = new ChartWindow();
+        fseriesX = fourier->addData(ft(map_x));
+        fseriesY = fourier->addData(ft(map_y));
+        fseriesZ = fourier->addData(ft(map_z));
+    }
     if(index == 0) {
         chart->setTitle(tr("Function of data received from COM-port"));
-        map_x = tmp_map_x;
-        map_y = tmp_map_y;
-        map_z = tmp_map_z;
-        seriesX = chart->addData(map_x);
-        seriesY = chart->addData(map_y);
-        seriesZ = chart->addData(map_z);
+        setCentralWidget(chart);
+        QtCharts::QLineSeries *tmp_seriesX, *tmp_seriesY, *tmp_seriesZ;
+        tmp_seriesX = seriesX;
+        seriesX = fseriesX;
+        fseriesX = tmp_seriesX;
+
     } else if(index == 1) {
         chart->setTitle(tr("Fourier Transformation of function"));
-        tmp_map_x = map_x;
-        tmp_map_y = map_y;
-        tmp_map_z = map_z;
-        map_x = ft(map_x);
-        map_y = ft(map_y);
-        map_z = ft(map_z);
-        seriesX = chart->addData(map_x);
-        seriesY = chart->addData(map_y);
-        seriesZ = chart->addData(map_z);
+        setCentralWidget(fourier);
     }
-    setCentralWidget(chart);
 //    chart->repaint();
     this->repaint();
 }
@@ -150,21 +145,15 @@ void MainWindow::openSerialPort(){
         if(len == 0) {break;}
         else if (len != 12) {continue;}
 
-
-        if (start)
-
-        {
+        if (start) {
             start_time = line[2].toULongLong();
             start = false;
         }
-
         else
-
         {
             y = line[2].toULongLong();
             time = y - start_time;
         }
-
         x_1 += line[3].toDouble();
         y_1 += line[4].toDouble();
         z_1 += line[5].toDouble();

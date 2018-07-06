@@ -42,10 +42,11 @@ private:
     QPushButton *start = nullptr;
     QComboBox *chartOptions = nullptr;
     ChartWindow *chart = nullptr;
+    ChartWindow *fourier = nullptr;
     QLabel *integralSum = nullptr;
     QTimer *timer = nullptr;
     std::map<size_t, qreal> map_x, map_y, map_z;
-    std::map<size_t, qreal> tmp_map_x, tmp_map_y, tmp_map_z;
     QtCharts::QLineSeries *seriesX, *seriesY, *seriesZ;
+    QtCharts::QLineSeries *fseriesX, *fseriesY, *fseriesZ;
 };
 #endif // MAINWIDGET_H
